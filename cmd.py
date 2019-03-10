@@ -103,7 +103,7 @@ def helpDesc(c):
 #Only when shell is starting up and on restart
 def load():
     # Slowly appending commands :)
-    # newCommA("direction", True, 0, "turn", turnValidate, turnRun, turnUsage, turnDesc)
+    newCommA("direction", True, 0, "turn", turnValidate, turnRun, turnUsage, turnDesc)
     newCommA("Null", 0, 1, "restart", 0, restartRun, 0, restartDesc)
     newCommA("Null", 0, 2, "exit", 0, exitRun, 0, exitDesc)
 
