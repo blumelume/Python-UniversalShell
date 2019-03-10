@@ -34,11 +34,11 @@ In this function you will load the commands you want to add to the default ones.
       (e.a.: c.validate = MethodType(<function>, c) )
       <function> needs to be replaced with the name of the function you wrote to validate the arguments (To see how to do that,
       see 'Validate function' below).
-!!   (If your command doesn`t take any arguments, you can replace everything after the '=' with a zero
+!!   (If your command doesnt take any arguments, you can replace everything after the '=' with a zero
 !!   e.a.: c.validate = 0)
 
       The second one is the description function.
-      Same as for the validate function. Except this one is required for every command. Even if it doesn`t take a
+      Same as for the validate function. Except this one is required for every command. Even if it doesnt take a
       single argument.
       (e.a.: c.description = MethodType(<function>))
       <function> needs to be replaced with the name of the function you wrote that contains the commands description
@@ -54,7 +54,7 @@ In this function you will load the commands you want to add to the default ones.
 
 Validate function
 
--> !! You do not need this function if your command doesn`t take any arguments !!
+-> !! You do not need this function if your command doesnt take any arguments !!
   This function needs two arguments. (e.a.: def exampleValidate(c, inp): )
   The input being an array of the parsed user input. The first index (inp[0]) is the command, the rest of the array
   are the entered arguments.
