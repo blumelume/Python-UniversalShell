@@ -1,20 +1,18 @@
 import main
-
 import sys
-from types import MethodType
 
 #Mask for a new command with one attribute / argument
 def newCommA(aLabel, aBool, cID, cLabel, valFunc, runFunc, usageFunc, descFunc):
     if (aLabel != "Null"):
         a = main.attribute(aLabel, aBool)
         c = main.command(cID, cLabel, [a])
-        c.validate = MethodType(valFunc, c)
-        c.usage = MethodType(usageFunc, c)
+        c.validate = main.MethodType(valFunc, c)
+        c.usage = main.MethodType(usageFunc, c)
     else:
         c = main.command(cID, cLabel, [ ])
 
-    c.description = MethodType(descFunc, c)
-    c.run = MethodType(runFunc, c)
+    c.description = main.MethodType(descFunc, c)
+    c.run = main.MethodType(runFunc, c)
     main.commands.append(c)
 
 #Command specific functions
@@ -122,5 +120,7 @@ def load():
 
     print("commands loaded")
     print(main.commands[0])
+
+    print(main.config.inpConfig[0])
 
 main.mainLoad(load)
