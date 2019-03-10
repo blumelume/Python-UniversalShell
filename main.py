@@ -1,5 +1,6 @@
 import config
 from importlib import reload
+from types import MethodType
 
 class command:
     def __init__(self, Id, label, att):
