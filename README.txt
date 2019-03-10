@@ -1,5 +1,14 @@
+#Python shell by Maximilian Rudolph
+
 Reference the shell by using pythons import statement.
 e.a.: import ~/pythonShell/main
+
+General Information
+
+-> inp ->> an array mimicking the users input. The first index of the array (inp[0]) is a command object
+   (instance of command). The rest of the arrays indices are the arguments / attributes the user entered.
+
+
 
 In the file you use the shell in, you need a couple of things in order for the shell to work properly.
 First of all, you need a function called load ( def load(): ).
@@ -35,15 +44,27 @@ In this function you will load the commands you want to add to the default ones.
       <function> needs to be replaced with the name of the function you wrote that contains the commands description
       (To see how to do that, see 'Description function' below).
 
+      All of your commands also need a 'Run function'. This specifies what happens when your command gets successfully
+      executed. It defines the output it produces.
+      (e.a.: c.run = MethodType(<function>, c) )
+      <function> needs to be replaced with the name of the function you wrote that will generate the commands output
+      (To see how to do that, see 'Run function' below).
+
 
 
 Validate function
 
 -> !! You do not need this function if your command doesn`t take any arguments !!
-  This function can take two arguments. (e.a.: def exampleValidate(c, inp): )
+  This function needs two arguments. (e.a.: def exampleValidate(c, inp): )
   The input being an array of the parsed user input. The first index (inp[0]) is the command, the rest of the array
   are the entered arguments.
   You now need to validate these arguments. The command is already validated at this point. So is the amount of given arguments.
   You really only need to check if you are able to use these arguments and later generate output based on them.
   How you do that is up to you and depends on your command and what you want to do in general.
   Just remember to return 0 if the arguments are valid and return 1 if they are not.
+
+
+Run function
+
+-> !! This function is required for every command !!
+   The run function needs two arguments (e.a.: def exampleRun(c, inp): )
