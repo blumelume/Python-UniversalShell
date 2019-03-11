@@ -13,7 +13,7 @@ class attribute:
     def __init__(self, req):
         self.req = req
 
-def newCommA(aBool = "Null", cLabel, valFunc, runFunc, usageFunc, descFunc):
+def newComm(cLabel, valFunc, runFunc, usageFunc, descFunc, aBool = "Null"):
     if (aBool != "Null"):
         a = attribute(aBool)
         print(a)
@@ -128,13 +128,13 @@ def hDesc(c):
 def loadDefaultCmd(defcmdConfig):
 
     if (defcmdConfig[0] == 0):
-        newCommA(restart", 0, restartRun, 0, restartDesc)
+        newComm("restart", 0, restartRun, 0, restartDesc)
     if (defcmdConfig[1] == 0):
-        newCommA("exit", 0, exitRun, 0, exitDesc)
+        newComm("exit", 0, exitRun, 0, exitDesc)
     if (defcmdConfig[2] == 0):
-        newCommA(False, "help", helpValidate, helpRun, helpUsage, helpDesc)
+        newComm("help", helpValidate, helpRun, helpUsage, helpDesc, False)
     if (defcmdConfig[3] == 0):
-        newCommA(False, "h", hValidate, hRun, hUsage, hDesc)
+        newComm("h", hValidate, hRun, hUsage, hDesc, False)
 
 
 def mainLoad(ld):
