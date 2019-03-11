@@ -1,81 +1,149 @@
 #Python shell by Maximilian Rudolph
 
-Reference the shell by using pythons import statement.
-e.a.: import ~/pythonShell/main
 
 General Information
-
--> inp ->> an array mimicking the users input. It is the result of the input parsing. The first index of the array
+-> inp => an array mimicking the users input. It is the result of the input parsing. The first index of the array
    (inp[0]) is a command object (instance of command). The rest of the arrays indices are the arguments / attributes
    the user entered.
 
+Initial setup
+-> In the file you use the shell in, you need a couple of things in order for the shell to work properly.
+   First of all you need to import the shell like you would import a library.
+   Simply write 'Import' at the top of your file and then the path to the main file (e.a.: Import ~/Desktop/pythonShell/main).
+   If you want to add commands, you need a function to load them. See more on that in the 'loading new commands' section.
+   To start the shell you need to call the main.mainLoad() function.
 
+Config.py
+-> In the config file you can configure the behaviour of the shell.
+   First you can customize the input prompt. The first index of the given list is the cursor. The rest is up to you.
+   You also have option to enable and disable the four default commands that the shell comes with. Replace the zeros with
+   ones and the corresponding command has been disabled.
+   The last option is for setting the maximum length of the command history. That is of course only relevant if the 'h'
+   default command is enabled. Set it to any number you want or 'n' to set it to infinite.
 
-In the file you use the shell in, you need a couple of things in order for the shell to work properly.
-First of all, you need a function called load ( def load(): ).
-In this function you will load the commands you want to add to the default ones.
+Errors and error codes
+-> Errors can occur in a lot of different situations. The message telling the user what they did wrong depends on the
+   error code. The error function and its arguments looks like this: error( <error code/errID>, <command object> )
+   There is a total of 4 default error codes.
+   0 => Invalid input
+   1 => Invalid amount of arguments
+   2 => Invalid argument(s)
+   3 => Too many arguments
+   4 => Command history is empty
 
-->  To load a command into the shells list of commands you append it to that list
-    (main.commands.append( <command object> )).
-    The '<command object>' needs to be replaced with an instance (object) of the command class.
-    (e.a.: c = command( ... ))
+Loading new commands
+->  To load a new command into the shells list of commands you append it to that list
+    Before you can do that however, you need to complete the setup of a new command. You can read about how to do that below.
 
-    The three dots need to be replaced with the arguments, that a command takes. These are defined by the command class.
-    It takes an ID (e.a.: 14574 or just 0) and a label which is the name of the command and
-    that also defines what you have to type in order to launch that command.
-    The third argument that it takes is an array of attributes. These are objects or instances of the attribute class.
-    Here is how you would define an attribute: a = attribute(<label>, <required>)
-    Where the <label> is a string and can be replaced with basically everything and the <required> has to be of type boolean.
+    First you need to create a attribute object.
+    (e.a.: a = attribute( ... ))
+    The three dots need to be replaced with the arguments, that an attribute takes. See 'Attribute object' section.
 
-    If you have done all of that you need to specify three crucial functions for every single command.
+    After that the command need to be defined.
+    (a.a.: c = command( ... ))
+    The three dots need to be replaced with the arguments, that a command takes.
+    For more on that look at the 'command object' section.
 
-      One of these is the validate function. You specify that by referencing the command instance that you just created
-      and adding a '.validate' after it. After that you have to specify the actual function that should be called, when these
-      arguments of your command need to be validated.
-      (e.a.: c.validate = main.MethodType(<function>, c) )
-      <function> needs to be replaced with the name of the function you wrote to validate the arguments (To see how to do that,
-      see 'Validate function' below).
-!!   (If your command doesnt take any arguments, you can replace everything after the '=' with a zero
-!!   e.a.: c.validate = 0)
+    If you have done that you need to specify four crucial functions for every single command.
+    These functions are unique to every command.
 
-      The second one is the description function.
-      Same as for the validate function. Except this one is required for every command. Even if it doesnt take a
-      single argument. It gets used when the help command is executed.
-!!    You do not need this function if you remove the default help command in the config file  
-      (e.a.: c.description = main.MethodType(<function>))
-      <function> needs to be replaced with the name of the function you wrote that contains the commands description
-      (To see how to do that, see 'Description function' below).
+    1. Validate function (e.a.: c.validate = MethodType( <function>, c ))
+       This function is only needed if the command takes any arguments.
+       For more see 'Validate function'.
 
-      All of your commands also need a 'Run function'. This specifies what happens when your command gets successfully
-      executed. It defines the output it produces.
-      (e.a.: c.run = main.MethodType(<function>, c) )
-      <function> needs to be replaced with the name of the function you wrote that will generate the commands output
-      (To see how to do that, see 'Run function' below).
+    2. Description function (e.a.: c.description = MethodType( <function>, c ))
+       For more see 'Description function'.
 
+    3. Run function (e.a.: c.description = MethodType( <function>, c ))
+       For more see 'Run function'.
 
+    4. Usage function (e.a.: c.usage = MethodType( <function>, c ) )
+       This function is only needed if the command takes any arguments.
+       For more see 'Usage function'
+
+    If the functions are written, they have to be linked to the command they belong to.
+    • <command object>.validate = main.MethodType( <function you have written>, <command object> )
+    • <command object>.description = main.MethodType( <function you have written>, <command object> )
+    • <command object>.run = main.MethodType( <function you have written>, <command object> )
+    • <command object>.usage = main.MethodType( <function you have written>, <command object> )
+
+    e.a.: c.validate = main.MethodType( commandxValidate, c )
+    In the example above, c is a command object and 'commandxValidate' is a the actual, unique function for validating
+    the entered arguments.
+
+    If your command doesnt take any arguments, you would set
+    <command object>.validate and
+    <command object>.usage equal to 0.
+    e.a.: c.validate = 0
+          c.usage = 0
+
+    If you have done all of that, you can finally append this command object to the global list of commands.
+    • main.commands.append(<command object>)
+    e.a.: main.commands.append(c)
+
+    Now you have loaded a new command into the shells 'brain'.
+    However if you dont want the command not to load when the shell is reloaded, you need to put all of this into a function.
+    That function can be called whatever you. I called it 'load'. Just for simplicity.
+    e.a.: def load():
+            ...
+
+    When you then call the 'mainload' function, you just pass this function in as an argument.
+    e.a.: main.mainload( load )
 
 Validate function
-
 -> !! You do not need this function if your command doesnt take any arguments !!
-   This function needs two arguments. (e.a.: def exampleValidate(c, inp): )
-   You now need to validate these arguments. The command is already validated at this point. So is the amount of given arguments.
+   This function should validate the arguments you command takes.
+   It needs to take two arguments.
+   1. An instance of the command class (command object).
+   2. The 'inp' array. Look under 'General information' for more info.
+
+   The command that has been entered is already validated at this point. So is the amount of given arguments.
    You really only need to check if you are able to use these arguments and later generate output based on them.
    How you do that is up to you and depends on your command and what you want to do in general.
-   Just remember to return 0 if the arguments are valid and return 1 if they are not.
-
-
-Run function
-
--> !! This function is required for every command !!
-   The run function needs two arguments (e.a.: def exampleRun(c, inp): )
-   You then basically do what ever you want to do. Just remember that this is the output so some print statements
-   would make a lot of sense.
-
+   Just remember to return 0 if the arguments are valid and return a different error code if they are not.
 
 Description function
+-> !! If you have the help command disabled you dont need this function. !!
+   !! If you have it enabled it is required for every command you add. !!
+   This function is used to display an explanation of a give command. It is associated with the default 'help' command.
 
--> !! If you have the help command disabled you dont need this function. If you have it enabled it is required for every
-   !! command you add.
-   This function only needs one argument (e.a.: def exampleDesc(c): )
+   This function only needs one argument.
+   1. An instance of the command class.
+
    This function can be extremely simple. You just need a simple print statement that contains a description of what your
    command does and what it might be used for or something. At least thats its normal usage.
+
+Run function
+-> !! This function is required for every command !!
+   This specifies what happens when your command gets successfully executed. It defines the output your command produces.
+
+   The run function needs two arguments
+   1. An instance of the command class (command object).
+   2. The 'inp' array. Look under 'General information' for more info.
+
+   You then basically do what ever you want to do. Just remember that this is the output so some print statements
+   to tell the user what you are doing would make a lot of sense.
+
+Command object
+-> Command objects are instances of the command class.
+   This how the definition for the command class looks.
+   class command:
+       def __init__(self, label, att):
+           self.label = label
+           self.att = att
+
+   As you can see a command has two parameters.
+   1. label, the commands name. It is of type string anf defines what the user has to type to run the command.
+   2. att, an array of attribute objects (See 'Attribute object' for more info)
+
+
+Attribute object
+-> Attribute objects are instances of the attribute class.
+   This is the definition of the attribute class:
+   class attribute:
+       def __init__(self, req):
+           self.req = req
+
+    An attribute object has only a single parameter.
+    1. req stands for required and is of type boolean.
+       It defines whether this argument is needed in order for the command to run or not.

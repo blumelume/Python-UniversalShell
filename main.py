@@ -137,7 +137,7 @@ def loadDefaultCmd(defcmdConfig):
         newComm("h", hValidate, hRun, hUsage, hDesc, False)
 
 
-def mainLoad(ld):
+def mainLoad(ld = 0):
     global load
     global commands
     global cmdHistory
