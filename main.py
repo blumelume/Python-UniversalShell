@@ -13,7 +13,7 @@ class attribute:
     def __init__(self, req):
         self.req = req
 
-def newCommA(aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
+def newCommA(aBool = "Null", cLabel, valFunc, runFunc, usageFunc, descFunc):
     if (aBool != "Null"):
         a = attribute(aBool)
         print(a)
@@ -31,7 +31,6 @@ def newCommA(aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
 
 def helpValidate(c, inp):
     if (len(inp) > 1):
-        #Command validation
         count = 0
         for i in commands:
             if (inp[1] != i.label):
@@ -40,9 +39,6 @@ def helpValidate(c, inp):
     return 0
 
 def hValidate(c, inp):
-    # for i in cmdHistory:
-    #     if (i == ):
-    #         cmdHistory.remove(i)
 
     if (len(cmdHistory) < 1):
         return 4
@@ -50,7 +46,7 @@ def hValidate(c, inp):
     if (len(inp) == 2):
         try:
             inp[1] = int(inp[1])
-        except:
+        except ValueError:
             return 2
 
         if (inp[1] > len(cmdHistory) or inp[1] < 1):
@@ -71,12 +67,11 @@ def exitRun(c, inp):
     sys.exit()
 
 def helpRun(c, inp):
+    print("Type 'help' <command> for commands description.")
+    print()
     if (len(inp) > 1):
-        #Command validation
         count = 0
         for i in commands:
-            #print(inp[1])
-            #print(i.label)
             if (inp[1] == i.label):
                 i.description()
                 break
@@ -95,9 +90,10 @@ def hRun(c, inp):
         temp = len(cmdHistory) - inp[1]
     else:
         temp = len(cmdHistory) - 2
-    print(">> " + cmdHistory[temp])
 
+    print(">> " + cmdHistory[temp])
     i = input("? ")
+
     if (i.lower() == ""):
         main(cmdHistory[temp])
 
@@ -105,30 +101,36 @@ def hRun(c, inp):
         error(2, inp[0])
 
 def helpUsage(c):
-    print("help + opt:'command'")
+    print("help (<command>)")
 
 def hUsage(c):
-    print("h + opt.: <1-5>")
+    print("h (<1-max number>)")
 
 def restartDesc(c):
-    print("This command restarts this 'shell'. That means it clears the command-history and reloads all of the commands.")
+    print("This command restarts this 'shell'. That means it clears the command-history and reloads all of the commands as well as the config file.")
 
 def exitDesc(c):
     print("By typing 'exit', the shells main loop will end and the python script will terminate.")
 
 def helpDesc(c):
     print("I`m assuming you know what help does, since you just used it. Well it shows you all of the commands you can enter here :)")
+    print("If you type 'help' <command> it will show you the commands description.")
+    print("If you just type 'help' it will show all of the commands with their usage.")
 
 def hDesc(c):
     print("This command lets you use a command you have recently typed already. It gives you acces to the command history.")
-    print("You can set its maxium length in the config.py file.")
+    print("You can also type 'h' <number from 1-number of entered commands or maximum length>. This number increases he further back in he history you get.")
+    print("For the latest command you would type 'h' or 'h 1'. For the secodn latest 'h 2' and so on...")
+    print("You will get a question mark. You either type enter to execute the command like shown above or type 'n' to abort the process.")
+    print()
+    print("You can set the historys maxium length in the config.py file.")
 
 def loadDefaultCmd(defcmdConfig):
 
     if (defcmdConfig[0] == 0):
-        newCommA("Null", "restart", 0, restartRun, 0, restartDesc)
+        newCommA(restart", 0, restartRun, 0, restartDesc)
     if (defcmdConfig[1] == 0):
-        newCommA("Null", "exit", 0, exitRun, 0, exitDesc)
+        newCommA("exit", 0, exitRun, 0, exitDesc)
     if (defcmdConfig[2] == 0):
         newCommA(False, "help", helpValidate, helpRun, helpUsage, helpDesc)
     if (defcmdConfig[3] == 0):
@@ -139,7 +141,7 @@ def mainLoad(ld):
     global load
     global commands
     global cmdHistory
-    global CURSOR
+    global printString
 
     cmdHistory = []
     commands = []
@@ -148,11 +150,15 @@ def mainLoad(ld):
     load()
 
     reload(config)
-    CURSOR = config.inpConfig[0]
-    print("done")
 
     loadDefaultCmd(config.defcmdConfig)
 
+    printString = ''
+    for i in range(1, len(config.inpConfig)):
+        printString += (config.inpConfig[i])
+    printString += config.inpConfig[0]
+
+    print("done")
     main()
 
 def main(hCmd = "Null"):
@@ -161,23 +167,23 @@ def main(hCmd = "Null"):
     #Mainloop
     a = True
     while(a):
-        if (config.cmdHistoryLen != "n"):
-            if (len(cmdHistory) > config.cmdHistoryLen):
-                cmdHistory = []
+        #Keep command history at right length
+        if (config.cmdHistoryLen != "n" and len(cmdHistory) > config.cmdHistoryLen):
+            del cmdHistory[0]
 
-        #input gathering
-        curr = getInp(hCmd)
+        curr = getInp(hCmd) #input gathering
         hCmd = "Null"
-        #input parse
-        splitArray = split(curr)
-        #input validation
-        inp = val(splitArray)
-        #generate output
-        out(inp)
+
+        splitArray = split(curr) #input parse
+
+        inp = val(splitArray) #input validation
+
+        out(inp) #generate output
 
 def error(errID, inp):
     print("Error: ", end = " ")
 
+    # There are no switch statements in python! WHY?!?!?
     if (errID == 0):
         print("This input is invalid.")
     elif (errID == 1):
@@ -195,11 +201,7 @@ def error(errID, inp):
 
 
 def getInp(hCmd):
-
-    printString = ''
-    for i in range(1, len(config.inpConfig)):
-        printString += (config.inpConfig[i])
-    printString += CURSOR
+    global printString
 
     print()
     if (hCmd == "Null"):
@@ -207,11 +209,10 @@ def getInp(hCmd):
         print()
     else:
         curr = hCmd
-        
+
     return curr
 
 def split(curr):
-    splitArray = []
     splitArray = curr.split(' ')
 
     for i in splitArray:
@@ -233,17 +234,14 @@ def val(inp):
             inp[0] = i
             break
 
-    #print(len(inp) - 1)
-    #print(len(inp[0].att))
-
     #Validating number of attributes
-    if (len(inp[0].att) >= 1):
+    if (len(inp[0].att) >= 1): #Command takes arguments / attributes
         count = 0
         for i in range(0, len(inp[0].att)):
             if (inp[0].att[i].req == True):
                 count += 1
 
-        if( len(inp) - 1 < count or len(inp) - 1 > len(inp[0].att)):
+        if(len(inp) - 1 < count or len(inp) - 1 > len(inp[0].att)):
             error(1, inp[0]) #Invalid amount of attributes
 
     elif (len(inp) > 1):
