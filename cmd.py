@@ -2,9 +2,9 @@ import main
 import sys
 
 #Mask for a new command with one attribute / argument
-def newCommA(aLabel, aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
-    if (aLabel != "Null"):
-        a = main.attribute(aLabel, aBool)
+def newCommA(aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
+    if (aBool != 0):
+        a = main.attribute(aBool)
         c = main.command(cLabel, [a])
         c.validate = main.MethodType(valFunc, c)
         c.usage = main.MethodType(usageFunc, c)
@@ -24,7 +24,7 @@ def turnValidate(c, inpArray):
     for i in directions:
         if (inpArray[1].lower() != i):
             count += 1
-            if (count == len(directions)):  return 1
+            if (count == len(directions)):  return 2
         else: return 0
 
 def chValidate(c, inp):
@@ -52,10 +52,10 @@ def chDesc(c):
 #Only when shell is starting up and on restart
 def load():
     # Slowly appending commands :)
-    newCommA("direction", True, "turn", turnValidate, turnRun, turnUsage, turnDesc)
+    newCommA(True, "turn", turnValidate, turnRun, turnUsage, turnDesc)
 
-    a = main.attribute("nameOne", True)
-    a2 = main.attribute("nameTwo", True)
+    a = main.attribute(True)
+    a2 = main.attribute(True)
     c = main.command("ch", [a, a2])
     c.validate = main.MethodType(chValidate, c)
     c.usage = main.MethodType(chUsage, c)

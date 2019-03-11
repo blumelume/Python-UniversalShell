@@ -10,14 +10,16 @@ class command:
 
 
 class attribute:
-    def __init__(self, label, req):
-        self.label = label
+    def __init__(self, req):
         self.req = req
 
-def newCommA(aLabel, aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
-    if (aLabel != "Null"):
-        a = attribute(aLabel, aBool)
+def newCommA(aBool, cLabel, valFunc, runFunc, usageFunc, descFunc):
+    if (aBool != "Null"):
+        a = attribute(aBool)
+        print(a)
+        print([a])
         c = command(cLabel, [a])
+        print(c.att)
         c.validate = MethodType(valFunc, c)
         c.usage = MethodType(usageFunc, c)
     else:
@@ -35,6 +37,25 @@ def helpValidate(c, inp):
             if (inp[1] != i.label):
                 count += 1
                 if (count == len(commands)): return 1 #Command invalid
+    return 0
+
+def hValidate(c, inp):
+    # for i in cmdHistory:
+    #     if (i == ):
+    #         cmdHistory.remove(i)
+
+    if (len(cmdHistory) < 1):
+        return 4
+
+    if (len(inp) == 2):
+        try:
+            inp[1] = int(inp[1])
+        except:
+            return 2
+
+        if (inp[1] > len(cmdHistory) or inp[1] < 1):
+            return 2
+
     return 0
 
 def restartRun(c, inp):
@@ -69,8 +90,25 @@ def helpRun(c, inp):
             else:
                 print()
 
+def hRun(c, inp):
+    if (len(inp) == 2):
+        temp = len(cmdHistory) - inp[1]
+    else:
+        temp = len(cmdHistory) - 2
+    print(">> " + cmdHistory[temp])
+
+    i = input("? ")
+    if (i.lower() == ""):
+        main(cmdHistory[temp])
+
+    elif (i.lower() != "n"):
+        error(2, inp[0])
+
 def helpUsage(c):
     print("help + opt:'command'")
+
+def hUsage(c):
+    print("h + opt.: <1-5>")
 
 def restartDesc(c):
     print("This command restarts this 'shell'. That means it clears the command-history and reloads all of the commands.")
@@ -81,26 +119,30 @@ def exitDesc(c):
 def helpDesc(c):
     print("I`m assuming you know what help does, since you just used it. Well it shows you all of the commands you can enter here :)")
 
+def hDesc(c):
+    print("This command lets you use a command you have recently typed already. It gives you acces to the command history.")
+    print("You can set its maxium length in the config.py file.")
+
 def loadDefaultCmd(defcmdConfig):
 
     if (defcmdConfig[0] == 0):
-        newCommA("Null", 0, "restart", 0, restartRun, 0, restartDesc)
+        newCommA("Null", "restart", 0, restartRun, 0, restartDesc)
     if (defcmdConfig[1] == 0):
-        newCommA("Null", 0, "exit", 0, exitRun, 0, exitDesc)
+        newCommA("Null", "exit", 0, exitRun, 0, exitDesc)
     if (defcmdConfig[2] == 0):
-        newCommA("command", False, "help", helpValidate, helpRun, helpUsage, helpDesc)
+        newCommA(False, "help", helpValidate, helpRun, helpUsage, helpDesc)
+    if (defcmdConfig[3] == 0):
+        newCommA(False, "h", hValidate, hRun, hUsage, hDesc)
 
 
 def mainLoad(ld):
     global load
     global commands
     global cmdHistory
-    global attributes
     global CURSOR
 
     cmdHistory = []
     commands = []
-    attributes = []
 
     load = ld
     load()
@@ -113,13 +155,19 @@ def mainLoad(ld):
 
     main()
 
-def main():
+def main(hCmd = "Null"):
+    global cmdHistory
 
     #Mainloop
     a = True
     while(a):
+        if (config.cmdHistoryLen != "n"):
+            if (len(cmdHistory) > config.cmdHistoryLen):
+                cmdHistory = []
+
         #input gathering
-        curr = getInp()
+        curr = getInp(hCmd)
+        hCmd = "Null"
         #input parse
         splitArray = split(curr)
         #input validation
@@ -140,19 +188,26 @@ def error(errID, inp):
         inp.usage()
     elif (errID == 3):
         print("Too many arguments. No arguments needed.")
+    elif (errID == 4):
+        print("Command history is empty.")
 
     main()
 
 
-def getInp():
+def getInp(hCmd):
+
     printString = ''
     for i in range(1, len(config.inpConfig)):
         printString += (config.inpConfig[i])
     printString += CURSOR
 
     print()
-    curr = input(printString + " ")
-    print()
+    if (hCmd == "Null"):
+        curr = input(printString + " ")
+        print()
+    else:
+        curr = hCmd
+        
     return curr
 
 def split(curr):
@@ -167,7 +222,6 @@ def split(curr):
     return splitArray
 
 def val(inp):
-    #print(inp)
 
     #Command validation
     count = 0
@@ -197,13 +251,19 @@ def val(inp):
 
     #Validate Attributes
     if (len(inp[0].att) >= 1):
-        if (inp[0].validate(inp) == 1):
-            error(2, inp[0])
+        temp = inp[0].validate(inp)
+        if (temp != 0):
+            error(temp, inp[0])
 
     return inp
 
 def out(inp):
-    cmdHistory.append(inp)
     a = inp[0].run(inp)
+
+    temp = inp[0].label
+    for i in range(1, len(inp)):
+        temp += " " + str(inp[i])
+    cmdHistory.append(temp)
+
     if (a == "restart"):
         mainLoad(load)
