@@ -1,17 +1,17 @@
-#Python shell by Maximilian Rudolph
+# Python shell by Maximilian Rudolph
 
 
 General Information
 -> inp => an array mimicking the users input. It is the result of the input parsing. The first index of the array
-   (inp[0]) is a command object (instance of command). The rest of the arrays indices are the arguments / attributes
+   (`inp[0]`) is a command object (instance of command class). The rest of the arrays indices are the arguments / attributes
    the user entered.
 
 Initial setup
--> In the file you use the shell in, you need a couple of things in order for the shell to work properly.
+-> In the file you use the shell in, you need a couple of things in order for everything to work properly.
    First of all you need to import the shell like you would import a library.
-   Simply write 'Import' at the top of your file and then the path to the main file (e.a.: Import ~/Desktop/pythonShell/main).
+   Simply write 'Import' at the top of your file and then the path to the main file (e.a.: `Import ~/Desktop/pythonShell/main`).
    If you want to add commands, you need a function to load them. See more on that in the 'loading new commands' section.
-   To start the shell you need to call the main.mainLoad() function.
+   To start the shell you need to call the `main.mainLoad()` function.
 
 Config.py
 -> In the config file you can configure the behaviour of the shell.
@@ -36,59 +36,59 @@ Loading new commands
     Before you can do that however, you need to complete the setup of a new command. You can read about how to do that below.
 
     First you need to create a attribute object.
-    (e.a.: a = attribute( ... ))
+    (e.a.: `a = attribute( ... )`)
     The three dots need to be replaced with the arguments, that an attribute takes. See 'Attribute object' section.
 
     After that the command need to be defined.
-    (a.a.: c = command( ... ))
+    (a.a.: `c = command( ... )`)
     The three dots need to be replaced with the arguments, that a command takes.
     For more on that look at the 'command object' section.
 
     If you have done that you need to specify four crucial functions for every single command.
     These functions are unique to every command.
 
-    1. Validate function (e.a.: c.validate = MethodType( <function>, c ))
+    1. Validate function (e.a.: `c.validate = MethodType( <function>, c )`)
        This function is only needed if the command takes any arguments.
        For more see 'Validate function'.
 
-    2. Description function (e.a.: c.description = MethodType( <function>, c ))
+    2. Description function (e.a.: `c.description = MethodType( <function>, c )`)
        For more see 'Description function'.
 
-    3. Run function (e.a.: c.description = MethodType( <function>, c ))
+    3. Run function (e.a.: `c.description = MethodType( <function>, c )`)
        For more see 'Run function'.
 
-    4. Usage function (e.a.: c.usage = MethodType( <function>, c ) )
+    4. Usage function (e.a.: `c.usage = MethodType( <function>, c )`)
        This function is only needed if the command takes any arguments.
        For more see 'Usage function'
 
     If the functions are written, they have to be linked to the command they belong to.
-    • <command object>.validate = main.MethodType( <function you have written>, <command object> )
-    • <command object>.description = main.MethodType( <function you have written>, <command object> )
-    • <command object>.run = main.MethodType( <function you have written>, <command object> )
-    • <command object>.usage = main.MethodType( <function you have written>, <command object> )
+    - `<command object>.validate = main.MethodType( <function you have written>, <command object> )`
+    - `<command object>.description = main.MethodType( <function you have written>, <command object> )`
+    - `<command object>.run = main.MethodType( <function you have written>, <command object> )`
+    - `<command object>.usage = main.MethodType( <function you have written>, <command object> )`
 
-    e.a.: c.validate = main.MethodType( commandxValidate, c )
-    In the example above, c is a command object and 'commandxValidate' is a the actual, unique function for validating
+    e.a.: `c.validate = main.MethodType( commandxValidate, c )`
+    In the example above, 'c' is a command object and 'commandxValidate' is a the actual, unique function for validating
     the entered arguments.
 
     If your command doesnt take any arguments, you would set
     <command object>.validate and
     <command object>.usage equal to 0.
-    e.a.: c.validate = 0
-          c.usage = 0
+    e.a.: `c.validate = 0`
+          `c.usage = 0`
 
     If you have done all of that, you can finally append this command object to the global list of commands.
-    • main.commands.append(<command object>)
-    e.a.: main.commands.append(c)
+    - `main.commands.append(<command object>)`
+    e.a.: `main.commands.append(c)`
 
     Now you have loaded a new command into the shells 'brain'.
     However if you dont want the command not to load when the shell is reloaded, you need to put all of this into a function.
     That function can be called whatever you. I called it 'load'. Just for simplicity.
-    e.a.: def load():
-            ...
+    e.a.: `def load():
+            ...`
 
     When you then call the 'mainload' function, you just pass this function in as an argument.
-    e.a.: main.mainload( load )
+    e.a.: `main.mainload( load )`
 
 Validate function
 -> !! You do not need this function if your command doesnt take any arguments !!
@@ -127,10 +127,11 @@ Run function
 Command object
 -> Command objects are instances of the command class.
    This how the definition for the command class looks.
-   class command:
-       def __init__(self, label, att):
-           self.label = label
-           self.att = att
+
+     `class command:
+         def __init__(self, label, att):
+             self.label = label
+             self.att = att `
 
    As you can see a command has two parameters.
    1. label, the commands name. It is of type string anf defines what the user has to type to run the command.
@@ -140,9 +141,10 @@ Command object
 Attribute object
 -> Attribute objects are instances of the attribute class.
    This is the definition of the attribute class:
-   class attribute:
+
+   `class attribute:
        def __init__(self, req):
-           self.req = req
+           self.req = req`
 
     An attribute object has only a single parameter.
     1. req stands for required and is of type boolean.
