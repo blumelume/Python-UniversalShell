@@ -52,13 +52,13 @@
        This function is only needed if the command takes any arguments.
        For more see 'Validate function'.
 
-    2. Description function ``(e.a.: `c.description = MethodType( <function>, c )`)``
-       For more see 'Description function'.
+   2. Description function ``(e.a.: `c.description = MethodType( <function>, c )`)``
+      For more see 'Description function'.
 
-    3. Run function ``(e.a.: `c.description = MethodType( <function>, c )`)``
+   3. Run function ``(e.a.: `c.description = MethodType( <function>, c )`)``
        For more see 'Run function'.
 
-    4. Usage function ``(e.a.: `c.usage = MethodType( <function>, c )`)``
+   4. Usage function ``(e.a.: `c.usage = MethodType( <function>, c )`)``
        This function is only needed if the command takes any arguments.
        For more see 'Usage function'
 
