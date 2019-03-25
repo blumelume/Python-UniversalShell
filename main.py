@@ -8,7 +8,6 @@ class command:
         self.label = label
         self.att = att
 
-
 class attribute:
     def __init__(self, req):
         self.req = req
@@ -147,10 +146,9 @@ def mainLoad(ld = 0):
     commands = []
 
     load = ld
-    load()
+    if (load != 0): load()
 
     reload(config)
-
     loadDefaultCmd(config.defcmdConfig)
 
     printString = ''
