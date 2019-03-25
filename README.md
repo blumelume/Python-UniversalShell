@@ -31,34 +31,36 @@
    2 => Invalid argument(s)
    3 => Too many arguments
    4 => Command history is empty
+   5 => ValueError cant convert to int
+   6 => ValueError cant convert to string
 
 ### Loading new commands
 ->  To load a new command into the shells list of commands you append it to that list
     Before you can do that however, you need to complete the setup of a new command. You can read about how to do that below.
 
-   First you need to create a attribute object.
-    ``(e.a.: `a = attribute( ... )`)``
+   First you need to create an attribute object.
+    (e.a.: `a = attribute( ... )`)
     The three dots need to be replaced with the arguments, that an attribute takes. See 'Attribute object' section.
 
    After that the command need to be defined.
-    ``(a.a.: `c = command( ... )`)``
+    (a.a.: `c = command( ... )`)
     The three dots need to be replaced with the arguments, that a command takes.
     For more on that look at the 'command object' section.
 
    If you have done that you need to specify four crucial functions for every single command.
     These functions are unique to every command.
 
-   1. Validate function ``(e.a.: `c.validate = MethodType( <function>, c )`)``
+   1. Validate function (e.a.: `c.validate = MethodType( <function>, c )`)
        This function is only needed if the command takes any arguments.
        For more see 'Validate function'.
 
-   2. Description function ``(e.a.: `c.description = MethodType( <function>, c )`)``
+   2. Description function (e.a.: `c.description = MethodType( <function>, c )`)
       For more see 'Description function'.
 
-   3. Run function ``(e.a.: `c.description = MethodType( <function>, c )`)``
+   3. Run function (e.a.: `c.run = MethodType( <function>, c )`)
        For more see 'Run function'.
 
-   4. Usage function ``(e.a.: `c.usage = MethodType( <function>, c )`)``
+   4. Usage function (e.a.: `c.usage = MethodType( <function>, c )`)
        This function is only needed if the command takes any arguments.
        For more see 'Usage function'
 

@@ -156,6 +156,7 @@ def mainLoad(ld = 0):
         printString += (config.inpConfig[i])
     printString += config.inpConfig[0]
 
+    print()
     print("done")
     main()
 
@@ -194,6 +195,10 @@ def error(errID, inp):
         print("Too many arguments. No arguments needed.")
     elif (errID == 4):
         print("Command history is empty.")
+    elif (errID == 5):
+        print("Value error. Unable to convert to integer.")
+    elif (errID == 6):
+        print("Value error. Unable to convert to string.")
 
     main()
 
