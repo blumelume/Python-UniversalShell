@@ -34,7 +34,7 @@ def addCommand(cLabel, valFunc = 0, runFunc = 0, usageFunc = 0, descFunc = 0, aB
 
 
 
-def mainLoad(ld = 0):
+def mainLoad(ld):
     global load
     global commands
     global cmdHistory
@@ -47,17 +47,6 @@ def mainLoad(ld = 0):
 
     cmdHistory = []
     commands = []
-
-    load = ld
-    if (load != 0): load()
-
-    reload(config)
-    loadDefaultCmd(config.defcmdConfig)
-
-    printString = ''
-    for i in range(1, len(config.inpConfig)):
-        printString += (config.inpConfig[i])
-    printString += config.inpConfig[0]
 
     # Tkinter init
     windowWidth = 600
@@ -98,129 +87,38 @@ def mainLoad(ld = 0):
     b = Button(mw, text = "send", width = 10, command = main)
     b.grid(row = 3, column = 0, sticky = "E")
 
+    load = ld
+    print(load)
+    load()
+
+    reload(config)
+    # loadDefaultCmd(config.defcmdConfig)
+
+    printString = ''
+    for i in range(1, len(config.inpConfig)):
+        printString += (config.inpConfig[i])
+    printString += config.inpConfig[0]
+
+
 
     print()
     scw("done")
+    mw.mainloop()
 
-def helpValidate(c, inp):
-    if (len(inp) > 1):
-        count = 0
-        for i in commands:
-            if (inp[1] != i.label):
-                count += 1
-                if (count == len(commands)): return 1 #Command invalid
-    return 0
-
-def hValidate(c, inp):
-
-    if (len(cmdHistory) < 1):
-        return 4
-
-    if (len(inp) == 2):
-        try:
-            inp[1] = int(inp[1])
-        except ValueError:
-            return 2
-
-        if (inp[1] > len(cmdHistory) or inp[1] < 1):
-            return 2
-
-    return 0
-
-def restartRun(c, inp):
-    scw()
-    scw("Restarting shell")
-    scw()
-    scw("-------------------------------------------------------")
-    return "restart"
-
-def exitRun(c, inp):
-    scw("Goodbye")
-    scw()
-    sys.exit()
-
-def helpRun(c, inp):
-    print("yee")
-    scw("Type 'help' <command> for commands description.")
-    scw()
-    if (len(inp) > 1):
-        count = 0
-        for i in commands:
-            if (inp[1] == i.label):
-                i.description()
-                break
-    else:
-        for i in range(0, len(commands)):
-            scw(str(i + 1) + ". " + commands[i].label, end = "")
-
-            if (len(commands[i].att) >= 1):
-                scw(" -  ", end = "")
-                commands[i].usage()
-            else:
-                scw()
-
-def hRun(c, inp):
-    if (len(inp) == 2):
-        temp = len(cmdHistory) - inp[1]
-    else:
-        temp = len(cmdHistory) - 2
-
-    scw(">> " + cmdHistory[temp])
-    i = input("? ")
-
-    if (i.lower() == ""):
-        main(cmdHistory[temp])
-
-    elif (i.lower() != "n"):
-        error(2, inp[0])
-
-def helpUsage(c):
-    scw("help (<command>)")
-
-def hUsage(c):
-    scw("h (<1-max number>)")
-
-def restartDesc(c):
-    scw("This command restarts this 'shell'. That means it clears the command-history and reloads all of the commands as well as the config file.")
-
-def exitDesc(c):
-    scw("By typing 'exit', the shells main loop will end and the python script will terminate.")
-
-def helpDesc(c):
-    scw("I`m assuming you know what help does, since you just used it. Well it shows you all of the commands you can enter here :)")
-    scw("If you type 'help' <command> it will show you the commands description.")
-    scw("If you just type 'help' it will show all of the commands with their usage.")
-
-def hDesc(c):
-    scw("This command lets you use a command you have recently typed already. It gives you acces to the command history.")
-    scw("You can also type 'h' <number from 1-number of entered commands or maximum length>. This number increases he further back in he history you get.")
-    scw("For the latest command you would type 'h' or 'h 1'. For the secodn latest 'h 2' and so on...")
-    scw("You will get a question mark. You either type enter to execute the command like shown above or type 'n' to abort the process.")
-    scw()
-    scw("You can set the historys maxium length in the config.py file.")
-
-def loadDefaultCmd(defcmdConfig):
-
-    if (defcmdConfig[0] == 0):
-        addCommand("restart", 0, restartRun, 0, restartDesc)
-    if (defcmdConfig[1] == 0):
-        addCommand("exit", 0, exitRun, 0, exitDesc)
-    if (defcmdConfig[2] == 0):
-        addCommand("help", helpValidate, helpRun, helpUsage, helpDesc, False)
-    if (defcmdConfig[3] == 0):
-        addCommand("h", hValidate, hRun, hUsage, hDesc, False)
+# def loadDefaultCmd(defcmdConfig):
+#
+#     if (defcmdConfig[0] == 0):
+#         addCommand("restart", 0, restartRun, 0, restartDesc)
+#     if (defcmdConfig[1] == 0):
+#         addCommand("exit", 0, exitRun, 0, exitDesc)
+#     if (defcmdConfig[2] == 0):
+#         addCommand("help", helpValidate, helpRun, helpUsage, helpDesc, False)
+#     if (defcmdConfig[3] == 0):
+#         addCommand("h", hValidate, hRun, hUsage, hDesc, False)
 
 
 def main(hCmd = "Null"):
     global cmdHistory
-
-    print(entryTxt.get())
-
-    w.config(state = NORMAL)
-    w.insert(END, "\n" + entryTxt.get())
-    w.config(state = DISABLED)
-    w.see(INSERT)
-
 
     #Keep command history at right length
     if (config.cmdHistoryLen != "n" and len(cmdHistory) > config.cmdHistoryLen):
@@ -239,32 +137,32 @@ def error(errID, inp = 0):
     # There are no switch statements in python! WHY?!?!?
 
     if (errID >= 0):
-        print("Error: ", end = " ")
+        scw("Error: ", end = " ")
         if (errID == 0):
-            print("This input is invalid.")
+            scw("This input is invalid.")
         elif (errID == 1):
-            print("Invalid amount of arguments. Usage:")
+            scw("Invalid amount of arguments. Usage:")
             inp.usage()
         elif (errID == 2):
-            print("Invalid arguments. Usage:")
+            scw("Invalid arguments. Usage:")
             inp.usage()
         elif (errID == 3):
-            print("Too many arguments. No arguments needed.")
+            scw("Too many arguments. No arguments needed.")
         elif (errID == 4):
-            print("Command history is empty.")
+            scw("Command history is empty.")
         elif (errID == 5):
-            print("Value error. Unable to convert to integer.")
+            scw("Value error. Unable to convert to integer.")
         elif (errID == 6):
-            print("Value error. Unable to convert to string.")
+            scw("Value error. Unable to convert to string.")
 
         mw.mainloop()
 
     else:
-        print("CodingError: ", end = " ")
+        scw("CodingError: ", end = " ")
         if (errID == -1):
-            print("You didnt define")
+            scw("You didnt define")
         elif (errID == -2):
-            print("")
+            scw("")
 
         sys.exit()
 
@@ -281,7 +179,12 @@ def getInp(hCmd):
     else:
         curr = hCmd
 
-    return curr
+    if (curr != ''):
+        scw()
+        scw(printString + " " + curr)
+        return curr
+    else:
+        mw.mainloop()
 
 def split(curr):
     splitArray = curr.split(' ')
@@ -328,14 +231,16 @@ def val(inp):
 
     return inp
 
-def scw(str = "", end = 0):
+def scw(temp = "", end = 0):
+    global w
     print("scw")
     if (end == 0):
-        str = str + '\n'
+        temp = str(temp) + '\n'
 
     w.config(state = NORMAL)
-    w.insert(END, str)
+    w.insert(END, temp)
     w.config(state = DISABLED)
+    w.see(INSERT)
     print("written")
 
 def out(inp):
@@ -349,7 +254,3 @@ def out(inp):
 
     if (a == "restart"):
         mainLoad(load)
-
-
-mainLoad()
-mw.mainloop()
