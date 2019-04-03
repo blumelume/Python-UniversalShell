@@ -13,37 +13,40 @@ class attribute:
     def __init__(self, req):
         self.req = req
 
-def addCommand(cLabel, valFunc = 0, runFunc = 0, usageFunc = 0, descFunc = 0, aBool = "Null"):
-    # if (valFunc == 0 or runFunc == 0 or usageFunc == 0 or descFunc == 0):
-    #     error(-1)
+def addCommand(cLabel, valFunc = 0, runFunc = 0, usageFunc = 0, descFunc = 0, reqAmount = 0, optAmount = 0):
+    if (runFunc == 0 or descFunc == 0):
+        error(-1)
 
-    if (aBool != "Null"):
-        a = attribute(aBool)
-        print(a)
-        print([a])
-        c = command(cLabel, [a])
-        print(c.att)
-        c.validate = MethodType(valFunc, c)
-        c.usage = MethodType(usageFunc, c)
-    else:
-        c = command(cLabel, [ ])
+    attArray = []
+    for i in range(0, reqAmount):
+        attArray.append(attribute(True))
+    for i in range(0, optAmount):
+        attArray.append(attribute(True))
+
+    c = command(cLabel, attArray)
 
     c.description = MethodType(descFunc, c)
     c.run = MethodType(runFunc, c)
     commands.append(c)
 
+    if (reqAmount != 0 or optAmount != 0):
+        if (usageFunc == 0 or valFunc == 0):
+            error(-2)
 
+        c.validate = MethodType(valFunc, c)
+        c.usage = MethodType(usageFunc, c)
 
 def mainLoad(ld):
     global load
     global commands
     global cmdHistory
     global printString
+    global usrError
 
     global mw
+    global w
     global entryTxt
     global labelTxt
-    global w
 
     cmdHistory = []
     commands = []
@@ -99,23 +102,15 @@ def mainLoad(ld):
         printString += (config.inpConfig[i])
     printString += config.inpConfig[0]
 
+    try:
+        usrError = config.error()
+    except AttributeError:
+        scw("Undefined usrError in config.py.")
 
 
     print()
     scw("done")
     mw.mainloop()
-
-# def loadDefaultCmd(defcmdConfig):
-#
-#     if (defcmdConfig[0] == 0):
-#         addCommand("restart", 0, restartRun, 0, restartDesc)
-#     if (defcmdConfig[1] == 0):
-#         addCommand("exit", 0, exitRun, 0, exitDesc)
-#     if (defcmdConfig[2] == 0):
-#         addCommand("help", helpValidate, helpRun, helpUsage, helpDesc, False)
-#     if (defcmdConfig[3] == 0):
-#         addCommand("h", hValidate, hRun, hUsage, hDesc, False)
-
 
 def main(hCmd = "Null"):
     global cmdHistory
@@ -154,15 +149,19 @@ def error(errID, inp = 0):
             scw("Value error. Unable to convert to integer.")
         elif (errID == 6):
             scw("Value error. Unable to convert to string.")
+        elif (errID == 7):
+            scw("Value error. Unable to convert to float.")
+        else:
+            usrError(errID, inp)
 
         mw.mainloop()
 
     else:
         scw("CodingError: ", end = " ")
         if (errID == -1):
-            scw("You didnt define")
+            scw("You have to specify at least three functions for every command.")
         elif (errID == -2):
-            scw("")
+            scw("Your command takes arguments so it needs a usage function. None was given.")
 
         sys.exit()
 
@@ -175,9 +174,10 @@ def getInp(hCmd):
     if (hCmd == "Null"):
         #curr = input(printString + " ")
         curr = entryTxt.get()
-        print("curr:", curr)
     else:
         curr = hCmd
+
+    entryTxt.set("")
 
     if (curr != ''):
         scw()
@@ -197,9 +197,6 @@ def split(curr):
     return splitArray
 
 def val(inp):
-    print("val")
-    print(inp)
-
     #Command validation
     count = 0
     for i in commands:
@@ -233,7 +230,6 @@ def val(inp):
 
 def scw(temp = "", end = 0):
     global w
-    print("scw")
     if (end == 0):
         temp = str(temp) + '\n'
 
@@ -241,10 +237,8 @@ def scw(temp = "", end = 0):
     w.insert(END, temp)
     w.config(state = DISABLED)
     w.see(INSERT)
-    print("written")
 
 def out(inp):
-    print("out")
     a = inp[0].run(inp)
 
     temp = inp[0].label
